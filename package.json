@@ -1,0 +1,95 @@
+{
+    "name": "jsdoc-view",
+    "displayName": "jsdoc-view",
+    "description": "Generate and View jsdoc comments within VSCode",
+    "version": "0.0.1",
+    "publisher": "shinworks",
+    "engines": {
+        "vscode": "^1.26.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:jsdocView.start",
+        "onCommand:jsdocView.generate",
+        "onLanguage:javascript"
+    ],
+    "main": "./extension",
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "jsdocView Configuration",
+            "properties": {
+                "jsdocView.buildScript": {
+                    "type": "string",
+                    "default": "build-docs",
+                    "description": "The desired npm script to run to generate the jsDocs for this project."
+                },
+                "jsdocView.docDir": {
+                    "type": "string",
+                    "default": "docs/",
+                    "description": "The project relative directory intp which the specified jsdoc script will generate the docs."
+                },
+                "jsdocView.preprocessOptions.replaceCSP" : {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Set to true if you want the jsdocView preprocessor to replace displayed html file's CSP with the default CSP which jsdocView thinks will work in Visual Code."
+                },
+                "jsdocView.preprocessOptions.fixAttributePaths": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Set to true if you want the jsdocView preprocessor to change all attribute paths in script, link & anchor tags without a protocol to use `vscode-resource:`"
+                },
+                "jsdocView.preprocessOptions.shimLinks": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Instructs the preprocessor to shin anchor link tags with a function which will allow them to work in Visual Code."
+                },
+                "jsdocView.preprocessOptions.shimLinkExcludeClasses": {
+                    "type": "array",
+                    "default": [ "dropdown-toggle" ],
+                    "description": "A list of anchor classes for which no shims should be inserted."
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "jsdocView.generate",
+                "title": "(Re)Generate jsdocs for this project",
+                "category": "Shinian Extensions"
+            },
+            {
+                "command": "jsdocView.start",
+                "title": "Display jsdocs",
+                "category": "Shinian Extensions"
+            },
+            {
+                "command": "editor.jsdocView",
+                "title": "Display jsDocs"
+            }
+        ],
+        "menus": {
+            "editor/context": [
+                {
+                    "command": "editor.jsdocView",
+                    "when": "editorLangId == javascript"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "eslint": "^4.11.0",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42"
+    },
+    "dependencies": {
+        "cheerio": "^1.0.0-rc.2"
+    }
+}
