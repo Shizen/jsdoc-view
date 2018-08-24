@@ -42,6 +42,8 @@ This extension assumes the presence of the `jsdoc` module, although it doesn't c
 
 ## Known Issues
 
+- The tag "override" scheme with `preprocessOptions.fixAttributePaths2` is not actually necessary for what I originally envisioned it for, but having coded it, I'm leaving it in place for the interim, in case another use for it emerges.
+
 - GetContext.  In the example I have been using, I have only one repos/project, one package.json and one set of jsdocs.  But, in `roi` for instance, I have many.  This issue here is that I should be looking for the nearest encapsulating package.json and trying to get docs from it, first (absent the more advanced topic of semantic integration).  For the purposes of this issue, this is a "by file" question.  I.e. based on the currenly openned/focused file, which is the closest package.json, and open its docs, if any.  This makes settings more complicated because different packages may have different jsdoc settings for location and generation, but our workspace has only one (based on the root level workspace).  This implies that I should somehow read these settings out of the `package.json` of the nearest encapsulating project--doc generation script, doc location.  
 
 - add img processing to preprocessor

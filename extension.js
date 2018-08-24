@@ -10,6 +10,7 @@ const path = require('path');
 const util = require('util');
 const cp = require("child_process");
 const fs = require('fs');
+const cheerio = require('cheerio');
 
 function activate(context) {
     let jsdocViewState = {};
@@ -193,7 +194,7 @@ function getJSDocContent(_panel, _extPath) {
             if(err) {            
                 vscode.window.showErrorMessage(util.format("jsdocView encountered an error: %s", err.message));
             }
-            _panel.webview.html = shimHtml(data.toString(), _extPath);
+            _panel.webview.html = preprocessHtml(data.toString(), _extPath);
         });
 
         //! Below are the examples for approved vscode method of getting resources from disk.
@@ -220,7 +221,7 @@ function getShimmedContent(_urlRelPath, _cbFn, _extPath) {
             if(err) {            
                 vscode.window.showErrorMessage(util.format("jsdocView encountered an error: %s", err.message));
             }
-            _cbFn(shimHtml(data.toString(), _extPath));
+            _cbFn(preprocessHtml(data.toString(), _extPath));
         });
     } catch (e) {
         vscode.window.showErrorMessage(util.format("jsdocView encountered an error shimming %s : `%s`", _urlRelPath, e.message));
@@ -235,7 +236,7 @@ function loadJSDoc(_panel, _fileName, _extPath, _scrollToPoint) {
         if(err) {            
             vscode.window.showErrorMessage(util.format("jsdocView encountered an error: %s", err.message));
         }
-        _panel.webview.html = shimHtml(data.toString(), _extPath);
+        _panel.webview.html = preprocessHtml(data.toString(), _extPath);
         if(_scrollToPoint !== undefined) {
             _panel.webview.postMessage({ scrollTo: _scrollToPoint });
         }
@@ -256,46 +257,84 @@ function loadJSDoc(_panel, _fileName, _extPath, _scrollToPoint) {
  * I could use a global, with the potentialy messes that introduces to avoid copying on the stack.  I could roll 
  * reading of the file into this function.  I could box the string buffer and pass it that way, which is probably
  * what I should do.
- * @param {string} _sHtml The string "buffer" containing the html to process.  See remarks.
- * @param {*} _extPath 
+ * How terrible is it that I pass the entire file on the stack?!?  I should really box it.  Look, I've even said
+ * it twice.
+ * @param {string} _sHtml A buffer with the sources to process.
+ * @param {string} _extPath The path to this extension 
+ * @param {string} _docPath "Optional", this is the path to the documentation this source comes from.  This
+ * is used to resolve relative [file] path references and links in the source html.  If not provided, 
+ * `preporcessHtml` will "guess" based on current settings.
  */
-function shimHtml(_sHtml, _extPath) {
-    const cheerio = require('cheerio');
+function preprocessHtml(_sHtml, _extPath, _docPath) {
     const $ = cheerio.load(_sHtml);
-    const { URL } = require('url');
-
-    // Now doing this twice...
     const config = vscode.workspace.getConfiguration('jsdocView');
-    let docDir = config.get("docDir");
-    let projectRootPath = vscode.workspace.rootPath.replace(/\\/g, "/");
-    // win32 patch
-    let drive = projectRootPath.substring(0, projectRootPath.lastIndexOf(":")+1);
-    projectRootPath = projectRootPath.substring(projectRootPath.lastIndexOf(":")+1);
-    let docPath = path.posix.join(projectRootPath, docDir);
-
-    //#region Helper functions
-    function hasNoProtocol(_url) {
-        // So I knew it would be wasteful, but it turns out its requirements cause it to be fail prima facia.
-        // let url = new URL(_url, docDir);
-
-        // So I should look up the RFC for protocol specification.  This seems fragile.
-        if(/^[\w-_]+:/.test(_url)) {
-            return false;
-        }
-        return true;
+  
+    // All of this made worse by path.posix.join/resolve/etc. not converting path delimeters properly (which it purports to do)
+    let projectRootPath = vscode.workspace.rootPath;
+    let drive = "";
+    if(process.platform === "win32") {
+      projectRootPath = projectRootPath.replace(/\\/g, "/");
+      drive = projectRootPath.substring(0, projectRootPath.lastIndexOf(":")+1);
+      projectRootPath = projectRootPath.substring(projectRootPath.lastIndexOf(":")+1);
     }
-
+  
+    // Derive best guess documentation directory if none provided.
+    if(_docPath === undefined) {
+      // Let's guess -- This will be replaced later by minimally a package.json check
+      let docDir = config.get("docDir");
+      _docPath = path.posix.join(projectRootPath, docDir);
+    }
+  
+    
+    //#region Helper functions
+    // I could make a preprocess class/object and decorate it with these functions, or I could 
+    // simply pull them out of here.  Only `normalizePath()` captures context.  Right now these are effectively
+    // private functions of `preprocessHtml()`
+  
+    /**
+     * @desc
+     * This is a simple helper function that tests if a given url has a scheme or not.
+     * @param {string} _url A url
+     * @algorithm
+     * This does a simple test for a ":" from the front like `^[\w-_]+:`.  I didn't look up the RFC, but afaik,
+     * this will match only a scheme.  An authority would require `//`  before the `:`.
+     * @notes
+     * So I knew it would be wasteful, but it turns out its requirements cause it to be fail prima facia.
+     * let url = new URL(_url, docDir);
+     */
+    function hasNoScheme(_url) {
+      if(/^[\w-_]+:/.test(_url)) {
+          return false;
+      }
+      return true;
+    }
+  
+    /**
+     * @desc
+     * Currently, we read docs from disk.  Until we decide to serve them from an on-demand server, the policies of
+     * vscode's webviewAPI require that we access local resources via the `vscode-resource:` scheme.  This helper
+     * function will take a relative path and convert it to a fully resolved vscode-resource path.
+     * @param {object} _el An element
+     * @param {string} _sAttr The attribute containing a relative path to normalize
+     */
     function normalizePath(_el, _sAttr) {
         let el = $(_el);
         let url = el.attr(_sAttr);
-
+  
         // The trouble here is, relative to what, potentially.
-        let p = path.posix.join(docPath, url);
+        let p = path.posix.join(_docPath, url);
         p = util.format("vscode-resource:/%s%s", drive, p);
         el.attr(_sAttr, p);
     }
-
+  
     /**
+     * @desc
+     * This function replaces the `href` of an element with an onclick shim function to send a message to
+     * the vscode "server" to navigate to the requested url.
+     * @deprecated
+     * These shims should no longer be necessary.  PreprocessHtml utilizes a broader reaching listener on 
+     * the click process that looks for applicable hrefs on anchors and performs the same message passing
+     * that this shim did.  In fact, I believe the shim has been removed from `jsdocViewIntegration.js`.
      * @remarks
      * At the moment, all shims are doc dir relative (and treated that way by the shim as well).
      * @param {object} _el 
@@ -310,123 +349,83 @@ function shimHtml(_sHtml, _extPath) {
         el.attr('href', null);
         el.attr("onclick", util.format("ss_shim_nav('%s')", ap));
     }
-
+  
     //#endregion
-
+  
     try {
-        // add/replace content-src policy
-        if(config.get("preprocessOptions.replaceCSP")) {
-            //<meta http-equiv="Content-Security-Policy"
-            let csp = $('meta[http-equiv=Content-Security-Policy]');
-            if(csp.length >0) {
-                csp.attr('content', "default-src vscode-resource: https: http: data:; img-src vscode-resource: https: data: http:; script-src 'unsafe-inline' 'unsafe-eval' vscode-resource: http:; style-src 'unsafe-inline' vscode-resource: https: http:;");
-            } else {
-                $('head').prepend('<meta http-equiv="Content-Security-Policy" content="default-src vscode-resource: https: http: data:; img-src vscode-resource: https: http: data:; script-src \'unsafe-inline\' \'unsafe-eval\' vscode-resource: http:; style-src \'unsafe-inline\' vscode-resource: https: http:;">');
-            }
-        }
-
-        // $('body').append('<script>$(document).ready(function() { console.log("`window` === `window.top`", window === window.top); \
-        //  console.log("`window.parent` === `window.top`", window.parent === window.top); \
-        //     if(window.parent.postMessage) {  \
-        //     	console.log("I have a parent");  \
-        //     } \
-        //     window.weakid = Math.random() * 20000; \
-        //     console.log(window.weakid); \
-        //     console.log(window); });</script>');
-
-        // fix link and script tags
-        if(config.get("preprocessOptions.fixAttributePaths")) {
-            $('[href]').each((idx, el) => {
-                let e = $(el);
-            });
-            $('script').filter(function() {
-                return this.attribs.src !== undefined;
-            }).each((idx, el) => {
-                if(hasNoProtocol(el.attribs.src)) {
-                    normalizePath(el, "src");
-                }
-            });
-            $('link[rel=stylesheet]').filter(function() {
-                return this.attribs.href !== undefined;
-            }).each((idx, el) => {
-                if(hasNoProtocol(el.attribs.href)) {
-                    normalizePath(el, "href");
-                }
-            });
-        }
-        
-        let exclusion = config.get("preprocessOptions.shimLinkExcludeClasses");
-        if(config.get("preprocessOptions.shimLinks")) {
-            // insert shim helpers
-            $('head').append(util.format('<script src="vscode-resource:/%s"></script>', path.join(_extPath, '/lib/jsdocViewIntegration.js').replace(/\\/g, "/")));
-
-            // and a link style
-            //! should I retrieve the cursor style for a default anchor?
-            $('head').append(`<style>a[onclick] { cursor: pointer }</style>`);
+      // Add in our integration "library"
+      $('head').append(util.format('<script src="vscode-resource:/%s"></script>', path.join(_extPath, '/lib/jsdocViewIntegration.js').replace(/\\/g, "/")));
+  
+      // Content Security Policy
+      if(config.get("preprocessOptions.replaceCSP")) {
+        let policy = config.get("preprocessOptions.useCSPolicy");
+        //<meta http-equiv="Content-Security-Policy"
+        let csp = $('meta[http-equiv=Content-Security-Policy]');
+        if(csp.length >0) {
+          csp.attr('content', policy);
         } else {
-            // I should split them up, but I use shim helpers for more than just shims now
-            $('head').append(util.format('<script src="vscode-resource:/%s"></script>', path.join(_extPath, '/lib/jsdocViewIntegration.js').replace(/\\/g, "/")));
+          policy = policy.replace(/'/g, "\'");
+          $('head').prepend(util.format('<meta http-equiv="Content-Security-Policy" content="%s">', policy));
+          // $('head').prepend('<meta http-equiv="Content-Security-Policy" content="default-src vscode-resource: https: http: data:; img-src vscode-resource: https: http: data:; script-src \'unsafe-inline\' \'unsafe-eval\' vscode-resource: http:; style-src \'unsafe-inline\' vscode-resource: https: http:;">');
         }
+      }
+  
+      // Process attributePath fixup
+      // This walks the structure in the settings to do the fixup.  The old scheme basically hardcoded the defaults.
+      if(config.get("preprocessOptions.fixAttributePaths2")) {
+        let fixupDescriptor = config.get("preprocessOptions.fixAttributePaths2");
+        for(let _tag in fixupDescriptor) {
+          let attrs = fixupDescriptor[_tag].attrs;
+          let inclFilter = fixupDescriptor[_tag].ifHasClass || [];
+          let exclFilter = fixupDescriptor[_tag].exceptHasClass || [];
+  
+          let tag = _tag;
+          if(fixupDescriptor[_tag].tag !== undefined) {
+            tag = fixupDescriptor[_tag].tag;
+          }
+          let sel;
 
-        $('a').filter(function() { 
-            return this.attribs.href !== undefined;
-        }).each((idx, el) => {
-            let shimmed = false;
-            if(config.get("preprocessOptions.shimLinks")) {
-                // if this anchor isn't excluded
-                if(!exclusion.reduce(function(acc, excl) {
-                    if($(el).hasClass(excl)) {
-                        return true;
-                    } else {
-                        return acc;
-                    }
-                }, false)) {
-                    // replace all normal links with onclick references
-                    if(hasNoProtocol(el.attribs.href)) {
-                        insertShim(el);
-                        shimmed = true;
-                    }
-                }
+          // I could have two paths, one without a `.filter` in the event there were no filters.  This would be (much) more verbose, but better perf.
+          attrs.forEach((_attr) => {
+            if(fixupDescriptor[_tag].selector !== undefined) {
+              sel = util.format("%s[%s]%s", tag, _attr, fixupDescriptor[_tag].selector);    // Yeah, this is kinda lame
+            } else {
+              sel = util.format("%s[%s]", tag, _attr);
             }
-
-            // temp testing
-            if(exclusion.reduce(function(acc, excl) {
-                if($(el).hasClass(excl)) {
-                    return true;
-                } else {
-                    return acc;
+            $(sel)
+              .filter(function() {
+                // Logically we're doing this...
+                // let inc = true;
+                // if(inclFilter) {
+                //   inc = hasClass(this.attribs.class, inclFilter);
+                // }
+                // if(declFilter && hasClass(this.attribs.class, declFilter)) {
+                //   inc = false;
+                // }
+                // But for perf reasons...
+                let inc = inclFilter.length === 0;
+                let cls = this.attribs.class !== undefined? this.attribs.class.split(" ") : [];    //?
+                for(let idx=0; idx < cls.length; idx++) {
+                  if(inclFilter.indexOf(cls[idx]) !== -1) {
+                    inc = true;
+                  }
+                  if(exclFilter.indexOf(cls[idx]) !== -1) {
+                    return false;
+                  }
                 }
-            }, false)) {
-                if(!shimmed && config.get("preprocessOptions.fixAttributePaths")) {
-                    if(hasNoProtocol(el.attribs.href)) {
-                        normalizePath(el, "href");
-                    }
+                return inc;
+              }).each((_idx, _el) => {
+                if(hasNoScheme(_el.attribs[_attr])) {
+                  normalizePath(_el, _attr);
                 }
-            }
-        });
-
+              });
+          });
+        }
+      }
+  
+      return $.html();
+  
     } catch(e) {
-        console.log("Something happened %s", e);
+      vscode.window.showErrorMessage("jsdocView encountered an error during preprocessing... (`%s`)", e.message);
     }
-    
-
-    
-
-    // $('a').filter(function() { 
-    //     // This is specifically filtering to avoid navbar expansions/replacements in the menu of docstrap jsdoc.
-    //     return this.attribs.href !== undefined && this.attribs.class.indexOf("navbar-brand") === -1;
-    // }).each((idx, el) => {
-    //     let e = $(el);
-    //     let ap = e.attr('href');
-    //     ap = ap.substring(ap.lastIndexOf(":")+1);
-    //     let p = path.posix.relative(rp, ap);
-    //     e.attr('href', null);
-    //     e.attr("onclick", util.format("ss_shim_nav('%s')", p));
-    // });
-
-    // Scroll
-    //$(document).ready(function() { 
-    //document.getElementById("anchorTest").scrollIntoView(); });
-
-    return $.html();
-}
+  }

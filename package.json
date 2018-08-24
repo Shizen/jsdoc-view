@@ -2,7 +2,7 @@
     "name": "jsdoc-view",
     "displayName": "jsdoc-view",
     "description": "Generate and View jsdoc comments within VSCode",
-    "version": "0.0.2-0",
+    "version": "0.0.2-alpha.1",
     "publisher": "shinworks",
     "engines": {
         "vscode": "^1.26.0"
@@ -36,7 +36,12 @@
                     "default": true,
                     "description": "Set to true if you want the jsdocView preprocessor to replace displayed html file's CSP with the default CSP which jsdocView thinks will work in Visual Code."
                 },
-                "jsdocView.preprocessOptions.fixAttributesPaths2": {
+                "jsdocView.preprocessOptions.useCSPolicy": {
+                    "type": "string", 
+                    "default" : "default-src vscode-resource: https: http: data:; img-src vscode-resource: https: data: http:; script-src 'unsafe-inline' 'unsafe-eval' vscode-resource: http:; style-src 'unsafe-inline' vscode-resource: https: http:;",
+                    "description": "The content security policy to use for jsdocs viewed within vscode"
+                },
+                "jsdocView.preprocessOptions.fixAttributePaths2": {
                     "type": "object",
                     "default": {
                         "a": {
@@ -47,9 +52,11 @@
                                 "dropdown-toggle"
                             ]
                         },
-                        "link": {
+                        "stylesheet": {
+                            "selector": "[rel=stylesheet]",
+                            "tag": "link",
                             "attrs": [
-                                "src"
+                                "href"
                             ]
                         },
                         "script": {
@@ -64,23 +71,6 @@
                         }
                     },
                     "description": "Specify custom tag and attribute handling for path fixups.  By tag, specify attributes (array), ifHasClass (array), and exceptHasClass(array).  Defaults to all unless ifHasClass is specified, then only those with that class are allowed.  `exceptHasClass` removes candidates from this list"
-                },
-                "jsdocView.preprocessOptions.fixAttributePaths": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "[deprecated]: Set to true if you want the jsdocView preprocessor to change all attribute paths in script, link & anchor tags without a protocol to use `vscode-resource:`"
-                },
-                "jsdocView.preprocessOptions.shimLinks": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "[deprecated]: Instructs the preprocessor to shin anchor link tags with a function which will allow them to work in Visual Code."
-                },
-                "jsdocView.preprocessOptions.shimLinkExcludeClasses": {
-                    "type": "array",
-                    "default": [
-                        "dropdown-toggle"
-                    ],
-                    "description": "[deprecated]: A list of anchor classes for which no shims should be inserted."
                 }
             }
         },
