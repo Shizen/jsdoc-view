@@ -1,5 +1,10 @@
 // jshint esversion: 6
 
+/**
+ * @remarks
+ * 
+ */
+
 const vscode = require('vscode');
 const path = require('path');
 const util = require('util');
@@ -7,30 +12,17 @@ const cp = require("child_process");
 const fs = require('fs');
 
 function activate(context) {
-    let jsDocPanel = undefined;
     let jsdocViewState = {};
+    jsdocViewState.extensionPath = context.extensionPath;
+    jsdocViewState.panel = undefined;
+    jsdocViewState.panelReady = false;
+    jsdocViewState.messages = [];
 
     context.subscriptions.push(vscode.commands.registerTextEditorCommand('editor.jsdocView', editor => {
         const columnToShowIn = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
-        if(jsDocPanel === undefined) {
-            jsDocPanel = vscode.window.createWebviewPanel(
-                'jsdocView',
-                "JSDoc View",
-                columnToShowIn,
-                { enableScripts: true }
-            );
-            
-            let uri = editor.document.uri;
-            let sel = editor.selection.active;
-            
-            vscode.window.showInformationMessage(util.format("Uri: %s ; Sel: %s", uri, sel));
-
-            getJSDocContent(jsDocPanel, context.extensionPath);
-            
-            jsDocPanel.onDidDispose(() => {
-                jsDocPanel = undefined;
-            }); //, undefined, context.subscriptions);
+        if(jsdocViewState.panel === undefined) {
+            createJsDocView(jsdocViewState, context, editor);
         } else {                        
             let uri = editor.document.uri;
             let sel = editor.selection.active;
@@ -39,69 +31,19 @@ function activate(context) {
             
             vscode.window.showInformationMessage(util.format("On Word `%s`; Uri: %s ; Sel: %s", word, uri, sel));
 
-            // jsDocPanel.reveal(columnToShowIn);
-            // The problem here is that the webview has been destroyed when it went into the background and now it is not available to receive a message
-            jsDocPanel.webview.postMessage({ search: word });    
+            postMessage({ search: word }, jsdocViewState);    
+            if(jsdocViewState.panel.visible === false) {
+                jsdocViewState.panel.reveal(columnToShowIn);
+            }
         }
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand("jsdocView.start", () => {
-        const columnToShowIn = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
-
-        let test = path.join(vscode.workspace.rootPath);
-        let t2 = vscode.Uri.file(test);
-        let t3 = vscode.Uri.file(context.extensionPath);
-        if(jsDocPanel === undefined) {
-            jsDocPanel = vscode.window.createWebviewPanel(
-                'jsdocView',
-                "JSDoc View",
-                columnToShowIn,
-                { enableScripts: true, localResourceRoots: [
-                    t3,
-                    t2
-                    // vscode.workspace.rootPath
-                    // path.join(vscode.workspace.rootPath, "docs"),
-                    // path.join(vscode.workspace.rootPath, "node_modules/ink-docstrap/template/static/styles")
-                ] }
-            );
-
-            let uri;
-
-            // shinTest(jsDocPanel);
-            getJSDocContent(jsDocPanel, context.extensionPath);
-            
-            jsDocPanel.onDidDispose(() => {
-                jsDocPanel = undefined;
-            }); //, undefined, context.subscriptions);
-
-            //-------------------------------------------------------------------------------------
-            // This is where we process messages we receive from the render thread (the jsdocView).
-            //-------
-            jsDocPanel.webview.onDidReceiveMessage(message => {
-                switch (message.command) {
-                    case 'navigate':
-                        let urlStub = message.text; // this was arbitrary;
-                        // Ok, so for docstrap, it generates source code lines with an oddly encoded line number, the exact definition of which
-                        // I should look up.
-                        // e.g. lib_index.js.html#sunlight-1-line-54
-                        urlStub = urlStub.split("#");
-                        let fName = urlStub[0];
-                        let anchor = urlStub[1];
-
-                        loadJSDoc(jsDocPanel, fName, context.extensionPath, anchor);
-                        return;
-                    case 'loadUrl':
-                        let url = message.text;
-                        getShimmedContent(url, function(_data) {
-                            // we need to encode it...
-                            let d = util.format("data:text/html;base64,%s", Buffer.from(_data).toString('base64'));
-                            jsDocPanel.webview.postMessage({ iframeSrc: url, load: d });    
-                        }, context.extensionPath);
-                }
-            }, undefined, context.subscriptions);
-            //-------------------------------------------------------------------------------------
+        if(jsdocViewState.panel === undefined) {
+            createJsDocView(jsdocViewState, context);
         } else {
-            jsDocPanel.reveal(columnToShowIn);
+            const columnToShowIn = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+            jsdocViewState.panel.reveal(columnToShowIn);
         }
     }));
 
@@ -111,10 +53,87 @@ function activate(context) {
 }
 exports.activate = activate;
 
-// this method is called when your extension is deactivated
 function deactivate() {
 }
 exports.deactivate = deactivate;
+
+function createJsDocView(_jsdocViewState, _context, _editor) {
+    const columnToShowIn = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+    let workspacePath = vscode.Uri.file(vscode.workspace.rootPath);
+    let extentionPath = vscode.Uri.file(_jsdocViewState.extensionPath);
+    _jsdocViewState.panel = vscode.window.createWebviewPanel(
+        'jsdocView',
+        "JSDoc View",
+        columnToShowIn,
+        { enableScripts: true, localResourceRoots: [
+            workspacePath,
+            extentionPath
+        ] }
+    );
+    
+    if(_editor) {
+        let uri = _editor.document.uri;
+        let sel = _editor.selection.active;
+        
+        vscode.window.showInformationMessage(util.format("Uri: %s ; Sel: %s", uri, sel));
+    }
+
+    getJSDocContent(_jsdocViewState.panel, _jsdocViewState.extensionPath);
+    
+    _jsdocViewState.panel.onDidChangeViewState((_event) => {
+        if(_event.webviewPanel.visible === false) {
+            _jsdocViewState.panelReady = false;
+        }
+    });
+    _jsdocViewState.panel.onDidDispose(() => {
+        _jsdocViewState.panel = undefined;
+        _jsdocViewState.panelReady = false;
+    }); //, undefined, _context.subscriptions);
+
+    //-------------------------------------------------------------------------------------
+    // This is where we process messages we receive from the render thread (the jsdocView).
+    //-------
+    _jsdocViewState.panel.webview.onDidReceiveMessage(message => {
+        switch (message.command) {
+            case 'navigate':
+                let urlStub = message.text; // this was arbitrary;
+                // Ok, so for docstrap, it generates source code lines with an oddly encoded line number, the exact definition of which
+                // I should look up.
+                // e.g. lib_index.js.html#sunlight-1-line-54
+                urlStub = urlStub.split("#");
+                let fName = urlStub[0];
+                let anchor = urlStub[1];
+
+                loadJSDoc(_jsdocViewState.panel, fName, _jsdocViewState.extensionPath, anchor);
+                return;
+            case 'loadUrl':
+                let url = message.text;
+                getShimmedContent(url, function(_data) {
+                    // we need to encode it...
+                    let d = util.format("data:text/html;base64,%s", Buffer.from(_data).toString('base64'));
+                    postMessage({ iframeSrc: url, load: d }, _jsdocViewState);    
+                }, _jsdocViewState.extensionPath);
+                return;
+            case 'viewReady':
+                _jsdocViewState.panelReady = true;
+                _jsdocViewState.messages.forEach((msg) => {
+                    postMessage(msg, _jsdocViewState);
+                });
+                _jsdocViewState.messages = [];
+                return;
+        }
+    }, undefined, _context.subscriptions);
+    //-------------------------------------------------------------------------------------
+}
+
+function postMessage(_message, _jsdocViewState) {
+    // So it doesn't dispose of the panel when it goes out of view.
+    if(_jsdocViewState.panelReady) {
+        _jsdocViewState.panel.postMessage(_message);
+    } else {
+        _jsdocViewState.messages.push(_message);
+    }
+}
 
 function generateJSDocs(_state) {
     // basic debounce
@@ -208,6 +227,22 @@ function getShimmedContent(_urlRelPath, _cbFn, _extPath) {
     }
 }
 
+function loadJSDoc(_panel, _fileName, _extPath, _scrollToPoint) {
+    const config = vscode.workspace.getConfiguration('jsdocView');
+    const docDir = config.get("docDir");
+    let p = path.join(vscode.workspace.rootPath, docDir, _fileName);
+    fs.readFile(p, (err, data) => {
+        if(err) {            
+            vscode.window.showErrorMessage(util.format("jsdocView encountered an error: %s", err.message));
+        }
+        _panel.webview.html = shimHtml(data.toString(), _extPath);
+        if(_scrollToPoint !== undefined) {
+            _panel.webview.postMessage({ scrollTo: _scrollToPoint });
+        }
+    });
+}
+
+
 /**
  * @desc
  * Process the html provided to make it functional within the gimped environment of a vscode webview.
@@ -290,6 +325,15 @@ function shimHtml(_sHtml, _extPath) {
             }
         }
 
+        // $('body').append('<script>$(document).ready(function() { console.log("`window` === `window.top`", window === window.top); \
+        //  console.log("`window.parent` === `window.top`", window.parent === window.top); \
+        //     if(window.parent.postMessage) {  \
+        //     	console.log("I have a parent");  \
+        //     } \
+        //     window.weakid = Math.random() * 20000; \
+        //     console.log(window.weakid); \
+        //     console.log(window); });</script>');
+
         // fix link and script tags
         if(config.get("preprocessOptions.fixAttributePaths")) {
             $('[href]').each((idx, el) => {
@@ -314,14 +358,14 @@ function shimHtml(_sHtml, _extPath) {
         let exclusion = config.get("preprocessOptions.shimLinkExcludeClasses");
         if(config.get("preprocessOptions.shimLinks")) {
             // insert shim helpers
-            $('head').append(util.format('<script src="vscode-resource:/%s"></script>', path.join(_extPath, '/lib/shim-helpers.js').replace(/\\/g, "/")));
+            $('head').append(util.format('<script src="vscode-resource:/%s"></script>', path.join(_extPath, '/lib/jsdocViewIntegration.js').replace(/\\/g, "/")));
 
             // and a link style
             //! should I retrieve the cursor style for a default anchor?
             $('head').append(`<style>a[onclick] { cursor: pointer }</style>`);
         } else {
             // I should split them up, but I use shim helpers for more than just shims now
-            $('head').append(util.format('<script src="vscode-resource:/%s"></script>', path.join(_extPath, '/lib/shim-helpers.js').replace(/\\/g, "/")));
+            $('head').append(util.format('<script src="vscode-resource:/%s"></script>', path.join(_extPath, '/lib/jsdocViewIntegration.js').replace(/\\/g, "/")));
         }
 
         $('a').filter(function() { 
@@ -385,40 +429,4 @@ function shimHtml(_sHtml, _extPath) {
     //document.getElementById("anchorTest").scrollIntoView(); });
 
     return $.html();
-}
-
-function loadJSDoc(_panel, _fileName, _extPath, _scrollToPoint) {
-    const config = vscode.workspace.getConfiguration('jsdocView');
-    const docDir = config.get("docDir");
-    let p = path.join(vscode.workspace.rootPath, docDir, _fileName);
-    fs.readFile(p, (err, data) => {
-        if(err) {            
-            vscode.window.showErrorMessage(util.format("jsdocView encountered an error: %s", err.message));
-        }
-        _panel.webview.html = shimHtml(data.toString(), _extPath);
-        if(_scrollToPoint !== undefined) {
-            _panel.webview.postMessage({ scrollTo: _scrollToPoint });
-        }
-    });
-}
-
-
-function shinTest(_panel) {
-    let t = path.join(vscode.workspace.rootPath, "test.html");
-    fs.readFile(t, (err, data) => {
-        if(err) {            
-            vscode.window.showErrorMessage(util.format("jsdocView encountered an error: %s", err.message));
-        }
-        _panel.webview.html = data.toString();
-    });
-}
-
-function loadTest(_panel, _fileName) {
-    let t = path.join(vscode.workspace.rootPath, _fileName);
-    fs.readFile(t, (err, data) => {
-        if(err) {            
-            vscode.window.showErrorMessage(util.format("jsdocView encountered an error: %s", err.message));
-        }
-        _panel.webview.html = data.toString();
-    });
 }

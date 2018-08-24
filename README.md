@@ -42,8 +42,9 @@ This extension assumes the presence of the `jsdoc` module, although it doesn't c
 
 ## Known Issues
 
+- GetContext.  In the example I have been using, I have only one repos/project, one package.json and one set of jsdocs.  But, in `roi` for instance, I have many.  This issue here is that I should be looking for the nearest encapsulating package.json and trying to get docs from it, first (absent the more advanced topic of semantic integration).  For the purposes of this issue, this is a "by file" question.  I.e. based on the currenly openned/focused file, which is the closest package.json, and open its docs, if any.  This makes settings more complicated because different packages may have different jsdoc settings for location and generation, but our workspace has only one (based on the root level workspace).  This implies that I should somehow read these settings out of the `package.json` of the nearest encapsulating project--doc generation script, doc location.  
+
 - add img processing to preprocessor
-- I need to rethink panel/reactivation patterns
 - settings need to be redone
   - We need to remove the shim references, as we are no longer shimming
 - search wire up does not work when webView is in background or not open--The window is destroyed and thus can not receive messages.  I need to create a handshake between the render thread and the extension so it knows when the webview is ready for messages before it sends the search command.
