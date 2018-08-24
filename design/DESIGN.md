@@ -4,8 +4,6 @@
 - `getShimmedContent` and `loadJSDoc` are almost the exact same thing.  Should probably remove one and clean up the code.
   - even `getJSDocContent` is only slightly different from the other two.
 
-- push up to git server
-  - semver
 - setup clone in extensions
 
 - Build vscode extension to look for updates to other extensions from private servers, rather than from the Marketplace.  By settings have a list of extensions to look for, similar to a dependencies list in npm?
@@ -148,6 +146,17 @@ Along with the code below, the following settings were removed from this extensi
       ],
       "description": "[deprecated]: A list of anchor classes for which no shims should be inserted."
   }
+
+The deprecated notes ;)
+
+`preprocessOptions.shimLinks`
+:   If true, the preprocessor will replace the `href` values on `<a>` tags with relative paths with an `onclick` shimmed function which will message vscode itself to update the webview's location.
+
+`preprocessOptions.shimLinkExcludeClasses`
+:   An array of class names any of which if present on a given tag indicate that the tag *should not be shimmed*, even if it would otherwise qualify.  This allows one to specify overrides for tags which may be shimmed by other functions (like the navbar in docstrap).
+
+`preprocessOptions.fixAttributePaths`
+:   Will cause the jsdocView preprocessor to replace the `href` and `src` attribute values of `<script>`, `<link>` and `<a>` tags which do not specify a protocol with an absolute pathed value with the `vscode-resource:` protocol.  Relative paths are assumed to be in the `docsDir`.
 
 `shimHtml()` :
 
