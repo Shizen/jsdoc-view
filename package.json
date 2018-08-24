@@ -2,7 +2,7 @@
     "name": "jsdoc-view",
     "displayName": "jsdoc-view",
     "description": "Generate and View jsdoc comments within VSCode",
-    "version": "0.0.2-alpha.1",
+    "version": "0.0.3-0",
     "publisher": "shinworks",
     "engines": {
         "vscode": "^1.26.0"
@@ -37,8 +37,8 @@
                     "description": "Set to true if you want the jsdocView preprocessor to replace displayed html file's CSP with the default CSP which jsdocView thinks will work in Visual Code."
                 },
                 "jsdocView.preprocessOptions.useCSPolicy": {
-                    "type": "string", 
-                    "default" : "default-src vscode-resource: https: http: data:; img-src vscode-resource: https: data: http:; script-src 'unsafe-inline' 'unsafe-eval' vscode-resource: http:; style-src 'unsafe-inline' vscode-resource: https: http:;",
+                    "type": "string",
+                    "default": "default-src vscode-resource: https: http: data:; img-src vscode-resource: https: data: http:; script-src 'unsafe-inline' 'unsafe-eval' vscode-resource: http:; style-src 'unsafe-inline' vscode-resource: https: http:;",
                     "description": "The content security policy to use for jsdocs viewed within vscode"
                 },
                 "jsdocView.preprocessOptions.fixAttributePaths2": {
