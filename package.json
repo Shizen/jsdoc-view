@@ -2,7 +2,7 @@
     "name": "@shizen/jsdoc-view",
     "displayName": "jsdoc-view",
     "description": "Generate and View jsdoc comments within VSCode",
-    "version": "0.0.3-2",
+    "version": "0.0.3-3",
     "publisher": "shinworks",
     "engines": {
         "vscode": "^1.26.0"
