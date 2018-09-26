@@ -40,6 +40,10 @@ So, when a webviewPanel is no longer visible, it gets destroyed.  It does not, h
 
 What I am doing currently is a hack.  If I attempt to send a message to a panel which is not visible (you can test that), then I know it isn't ready, and I reset it's ready state and queue the message.  This still leaves a race condition hole where if a message gets queued when a panel is loading but after it has been revealed, this check will not trigger and the message will be lost.
 
+## The shim alternative
+
+Rather than shim all the links, I've put in an event intercept on the document to look for clicks on links and override them as appropriate.  Thus far, this has worked fine.  I'm catching, iir, `document.onclick` to intercept such events.  This may have issues I haven't thought of.  I annotate here [this article](https://www.sitepoint.com/javascript-event-delegation-is-easier-than-you-think/) I didn't read on event bubbling, in case this turns out to require investigation.
+
 ## `message ready`
 
 I have uncovered a architectural flaw in the webview system where, basically, there is no mechanism that allows an extension to know when a webview is ready.  Instead, I will need to role my own.  This is basically going to be a two part problem.  First, I need to have the webview notify the extension when it is ready (in document.ready).  Second, I need to wrapper `_panel.webview.postMessage` such that any messages sent to the webview before its ready are instead put onto a queue and get sent, instead, when it receives the webviewReady message.
@@ -183,8 +187,8 @@ The deprecated notes ;)
       // Now doing this twice...
       const config = vscode.workspace.getConfiguration('jsdocView');
       let docDir = config.get("docDir");
-      let projectRootPath = vscode.workspace.rootPath.replace(/\\/g, "/");
-      // win32 patch
+      let projectRootPath = vscode.workspace.rootPath.replace(/\\/g, "/");  //! _path = path.normalize(_path); <-- Why didn't this work
+      // win32 patch       
       let drive = projectRootPath.substring(0, projectRootPath.lastIndexOf(":")+1);
       projectRootPath = projectRootPath.substring(projectRootPath.lastIndexOf(":")+1);
       let docPath = path.posix.join(projectRootPath, docDir);

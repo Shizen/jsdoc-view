@@ -7,11 +7,15 @@ Introduces the command `jsdocView.start`, which will open up the jsdoc docs for 
 - Generate the jsdoc documentation for your project from within vscode.
 - Bring up a webview within vscode to display the jsdoc documentation for the current project
   - [Not Implemented] Synchronized between active source file in the text editor and the webview
+- Look at building a `css` sheet for #2 & #3 which takes advantage of css vars and VSCode's use thereof.
+		code {
+		    color: var(--vscode-editor-foreground);
+		} 
 
 ### Possible Future Features
 
-- Allow the setting of a custom CSP for the jsdocView panel.
 - Backwards hook-in -- shim source code links to open the texteditor in the appropriate location.
+- Service implementation -- Alter the structure of this extension to use a service which starts itself up on demand and serves the jsdoc information to the webview.  The service would shut itself down after timeout (because it can always be spun back up anyway).  This service would then be responsible for doing any preprocessing (probably much less necessary), search, etc. type patterns.
 
 ## Requirements
 
