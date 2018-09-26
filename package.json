@@ -1,5 +1,5 @@
 {
-    "name": "jsdoc-view",
+    "name": "@shizen/jsdoc-view",
     "displayName": "jsdoc-view",
     "description": "Generate and View jsdoc comments within VSCode",
     "version": "0.0.3-2",
