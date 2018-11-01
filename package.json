@@ -2,7 +2,7 @@
     "name": "jsdoc-view",
     "displayName": "JSDoc Viewer",
     "description": "Generate and View jsdoc documentation within VSCode",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "author": {
         "url": "http://www.shinworks.co",
         "email": "shin@shinworks.co",
