@@ -11,7 +11,7 @@
     "publisher": "shinworks",
     "galleryBanner": {
         "color": "#ddd",
-        "theme": "dark"
+        "theme": "light"
     },
     "icon": "assets/Shinworks128.png",
     "preview": true,
