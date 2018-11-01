@@ -1,0 +1,79 @@
+{
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "plugins": [ "node_modules/@shizen/jsdoc-tags/shin-jsdoc-tags.js", "node_modules/@shizen/jsdoc-shinmark/shinmark" ],
+  "shinmark": {
+    "tags": ["futures", "issues", "notes", "remarks", "algorithm", "changelog" ]
+  },
+  "excludePattern": "(^|\\/|\\\\)",
+  "source": {
+    "exclude": [ "node_modules" ]
+  },
+  "opts": {
+    "template": "node_modules/@shizen/shinstrap/template",
+    "tutorials" : "design" 
+  },
+  "templates": {
+    "logoFile": "img/ShinworksBW.png",
+    "favicon": "assets/Shinworks.svg",
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "dateFormat": "ddd MMM Do YYYY",
+    "outputSourceFiles": false,
+    "outputSourcePath": false,
+    "systemName": "jsdoc-view",
+    "footer": "",
+    "copyright": "`JSDoc Viewer` Copyright © 2018 Shin",
+    "navType": "vertical",
+    "theme": "lumen",
+    "linenums": true,
+    "collapseSymbols": false,
+    "inverseNav": true,
+    "protocol": "html://",
+    "methodHeadingReturns": false,
+    "supplementalCSS": "local.css",
+    "customizeOutput": {
+      "menus": {
+        "design": {
+          "title": "Design",
+          "access": "private",
+          "members": [ "DESIGN" ]
+        }
+      },
+      "container" : {
+        "article" : {
+          "overview": {
+            "all" : [ "description", "notes", "design", "algorithm", "*" ],
+            "tags": {
+              "design": {
+                "titleWrapper": "h5",
+                "titleWrapperAttributes": "class='jsdoc-design-title subsection-title'",
+                "wrapper": "div",
+                "wrapperAttributes" : "class=jsdoc-design-body"
+              },
+              "notes": {
+                "titleWrapper": "h5",
+                "titleWrapperAttributes": "class='jsdoc-notes-title subsection-title'",
+                "wrapper": "div",
+                "wrapperAttributes" : "class=jsdoc-notes-body"
+              },
+              "algorithm": {
+                "titleWrapper": "h5",
+                "titleWrapperAttributes": "class='jsdoc-algorithm-title subsection-title'",
+                "wrapper": "div",
+                "wrapperAttributes" : "class=jsdoc-algorithm-body"
+              }
+            }
+          },
+          "body": {
+            "all" : [ "*" ],
+            "tags" : {
+
+            }
+          }
+        }
+      }
+    }
+  }
+}

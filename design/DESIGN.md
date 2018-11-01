@@ -4,17 +4,25 @@
 - `getShimmedContent` and `loadJSDoc` are almost the exact same thing.  Should probably remove one and clean up the code.
   - even `getJSDocContent` is only slightly different from the other two.
 
-- setup clone in extensions
+- Double check into `retainContextWhenHidden` and verify that this isn't something I need to worry about.  (I recall looking at this before, but I'm less confident of my memory that it wasn't apropos)  [Webview API example](https://code.visualstudio.com/docs/extensions/webview)
 
-- Build vscode extension to look for updates to other extensions from private servers, rather than from the Marketplace.  By settings have a list of extensions to look for, similar to a dependencies list in npm?
+- This entire package feels like it needs to have be reviewed more seriously.
+    - The documentation also needs to be updated, especially with regard to taking advantage of new `shinstrap`/`shin-jsdoc-tags` facilities.
 
 }
+
+# Issues
+
+- I noticed there may be a (new) bug which has cropped up vis a vis searches--although I tested search extensively previously, without unit tests 8)..  Anyway, I noticed while documenting that links which point to the file I'm already in do not appear to resolve?  I should looking into this.
 
 # Design Debates
 
 !{ Total aside
 Now that I've been using this pattern more, this isn't exactly a DESIGN document as much as it is a dev journal.  Perhaps I should rename it.
+-- Actually what I've done elsewhere is split them into two separate documents
 }
+
+`CHANGELOG.md` is nice and all for consumers of the extension, but really I want a similar document with notes for *me* about changes to the internal structure of this extension, its algorithms and the like.  I already have some facilities to accomplish this in place via `shinstrap` and `shin-jsdoc-tags`.  Actually I like this thought, but I need to extend those tags to include commit refs and use `shinzen` to produce reports thereof.  Then I could refrain from maintaining a `DEV-CHANGELOG.md`, per se, but rather generate one from doc comments made as the changes were put into place, which feels more intelligent, although susceptible, perhaps, to laziness.
 
 ## The Service model
 
@@ -36,9 +44,7 @@ Without reading more about Langauge services, the idea here would be to spawn a 
 
 ## Another webviewPanel bug
 
-So, when a webviewPanel is no longer visible, it gets destroyed.  It does not, however, call dispose.  It then is silently recreated when it comes into focus again.  This means that the panel's contents are reloaded and are temporarily unavailable (vis a vis messages).  This is an additional issue to `message ready` below, because this recurs every time the webview panel is hidden.  There aught to be an event or trigger.  
-
-What I am doing currently is a hack.  If I attempt to send a message to a panel which is not visible (you can test that), then I know it isn't ready, and I reset it's ready state and queue the message.  This still leaves a race condition hole where if a message gets queued when a panel is loading but after it has been revealed, this check will not trigger and the message will be lost.
+So, when a webviewPanel is no longer visible, it gets destroyed.  It does not, however, call dispose.  It then is silently recreated when it comes into focus again.  This means that the panel's contents are reloaded and are temporarily unavailable (vis a vis messages).  This is an additional issue to `message ready` below, because this recurs every time the webview panel is hidden.  There is an event, however, that appears to work--`onDidChangeViewState`.
 
 ## The shim alternative
 
@@ -46,7 +52,7 @@ Rather than shim all the links, I've put in an event intercept on the document t
 
 ## `message ready`
 
-I have uncovered a architectural flaw in the webview system where, basically, there is no mechanism that allows an extension to know when a webview is ready.  Instead, I will need to role my own.  This is basically going to be a two part problem.  First, I need to have the webview notify the extension when it is ready (in document.ready).  Second, I need to wrapper `_panel.webview.postMessage` such that any messages sent to the webview before its ready are instead put onto a queue and get sent, instead, when it receives the webviewReady message.
+I have uncovered an architectural flaw in the webview system where, basically, there is no mechanism that allows an extension to know when a webview is ready.  Instead, I will need to roll my own.  This is basically going to be a two part problem.  First, I need to have the webview notify the extension when it is ready (in document.ready).  Second, I need to wrapper `_panel.webview.postMessage` such that any messages sent to the webview before its ready are instead put onto a queue and get sent, instead, when it receives the webviewReady message.
 
 ## The `docstrap search`
 
@@ -71,6 +77,10 @@ Works, but only from the context of the debugger, which is working from a global
   window.self.scrollTo(0, 300)
 
 # Gotchas
+
+#{ Release Notes (Log) 
+- I have removed shims from preprocessing.  All links go through an event capture mechanism now, which intercepts and reroutes anchor links to local path relative urls.  This is in alpha and may have bugs.
+}
 
 ## Paths in createWebView
 

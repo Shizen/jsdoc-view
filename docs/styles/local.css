@@ -1,0 +1,92 @@
+/* Why is site.lumen setting page-title to white? */
+.page-title, .copyright, .jsdoc-message {
+  color: #333;
+}
+
+.jsdoc-template-filename {
+  color: rgb(199, 37, 78);
+}
+
+.jsdoc-attrib-csl {
+  color: #999;
+  font-variant: small-caps;
+  font-size:0.85em;
+}
+
+.jsdoc-honors-title em {
+  font-style: normal;
+  font-weight: bold;
+}
+
+h3.shinstrap-collapsible[data-hide="true"]+div {
+  display: none;
+}
+h3.shinstrap-collapsible[data-hide="true"]+dl {
+  /* Templates */
+  display:none;
+}
+h3.shinstrap-collapsible[data-hide="false"]::before {
+  display: inline-block;
+  font-family:'Glyphicons Halflings';
+  content: "\e082";
+  vertical-align: -5%;
+  font-size:0.9em;
+}
+h3.shinstrap-collapsible[data-hide="true"]::before {
+  display: inline-block;
+  font-family:'Glyphicons Halflings';
+  content: "\e081";
+  vertical-align: -5%;
+  font-size:0.9em;
+}
+
+fieldset.jsdoc-redirect {
+  margin: 0.5em;
+  padding: 2em;
+  border: 1px dotted #333;
+}
+
+fieldset.jsdoc-redirect[data-hide="true"] * {
+  display: none;
+}
+
+fieldset.jsdoc-redirect[data-hide="false"] * {
+  /* Not none */
+}
+
+fieldset.jsdoc-redirect[data-hide] legend {
+  display: inline-block;
+  border: 0;
+  font-size: 1.1em;
+  width: initial;
+  margin: 0;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+}
+
+fieldset.jsdoc-redirect[data-hide] legend>span {
+  display: initial;
+  vertical-align: -5%;
+}
+
+fieldset.jsdoc-redirect[data-hide="false"] legend>span::before {
+  display: initial;
+  font-family:'Glyphicons Halflings';
+  content: "\e082"
+}
+fieldset.jsdoc-redirect[data-hide="true"] legend>span::before {
+  display: initial;
+  font-family:'Glyphicons Halflings';
+  /* content: "\2b"; */
+  content: "\e081";
+}
+
+fieldset.jsdoc-redirect hr {
+  display: none;
+}
+
+.md ul, .md ol {
+  padding-top: 0.1em;
+  margin-left: 20px;
+  margin-bottom: 1.1em;
+}

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>jsdoc-view Tutorial: DESIGN</title>
+
+	
+		<link type="image/svg+xml" rel="icon" href="data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0ODguMjUgNDg3LjMiPjxkZWZzPjxzdHlsZT4uY2xzLTF7ZmlsbDpub25lO3N0cm9rZTojMDAwO3N0cm9rZS1taXRlcmxpbWl0OjEwO3N0cm9rZS13aWR0aDoxNHB4O30uY2xzLTIsLmNscy0ze2ZvbnQtc2l6ZToyMi4xcHg7fS5jbHMtMntmb250LWZhbWlseTpDaXJ0aEVyZWJvckNhcHMyLCBDaXJ0aCBFcmVib3IgQ2Fwcy0yO30uY2xzLTN7Zm9udC1mYW1pbHk6Q2lydGhFcmVib3IsIENpcnRoIEVyZWJvcjt9LmNscy00e2ZvbnQtc2l6ZToxMzcuMTRweDtmb250LWZhbWlseTpCcmFuZGlzaCwgQnJhbmRpc2g7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5TaGlud29ya3M8L3RpdGxlPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTQ5MS40LDE5OS4xMWwtMTQuOTMtNDMuNzdMNDEwLDE2Ny4xM2ExNzYuODcsMTc2Ljg3LDAsMCwwLTQ2LjM0LTUyLjc5bDE1LjQ2LTUxLjA4TDMzNS42Myw0MS40OCwzMDQsODQuNThhMTc2LjU1LDE3Ni41NSwwLDAsMC03Mi43LTQuODdsLTMxLTU5LjNMMTU2LjQ4LDM1LjM0bDExLjY5LDY1Ljg5YTE3Ni40LDE3Ni40LDAsMCwwLTUzLjMyLDQ2LjYxTDYzLjksMTMyLjQxLDQyLjEyLDE3Nmw0Mi45NSwzMS41NmExNzYuNiwxNzYuNiwwLDAsMC01LDcyLjE3TDIwLjI4LDMxMC45NGwxNC45Myw0My43N0wxMDEuNDEsMzQzQTE3Ni43NiwxNzYuNzYsMCwwLDAsMTQ4LDM5Ni41NkwxMzIuOCw0NDYuOWw0My41MywyMS43OCwzMS4wOS00Mi4zMWExNzYuNTEsMTc2LjUxLDAsMCwwLDczLjQsNS4wNmwzMC45NCw1OS4xNiw0My43Ni0xNC45My0xMS42Ni02NS43M2ExNzYuNTUsMTc2LjU1LDAsMCwwLDUzLjItNDYuNDRsNTAuNDgsMTUuMjgsMjEuNzgtNDMuNTNMNDI2Ljg3LDMwNGExNzYuNTgsMTc2LjU4LDAsMCwwLDQuOTQtNzMuNzdaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMTEuNzEgLTExLjg1KSIvPjxjaXJjbGUgY2xhc3M9ImNscy0xIiBjeD0iMjQ0LjI5IiBjeT0iMjQzLjczIiByPSIxMTIuMTQiLz48dGV4dCBjbGFzcz0iY2xzLTIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDI1MS41NiAzNzkuMSkgcm90YXRlKDE3OC4wOCkiPn08L3RleHQ+PHRleHQgY2xhc3M9ImNscy0yIiB0cmFuc2Zvcm09Im1hdHJpeCgtMSwgLTAuMDgsIDAuMDgsIC0xLCAyNDYuNDIsIDM3OS44NSkiPiU8L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMjEuNjcgMzc3LjY3KSByb3RhdGUoLTE2Ni44MikiPi48L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09Im1hdHJpeCgtMC45NCwgLTAuMzUsIDAuMzUsIC0wLjk0LCAyMDUuNDMsIDM3My45KSI+QDwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE4OS43MiAzNjcuODYpIHJvdGF0ZSgtMTU1LjA1KSI+ezwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0ibWF0cml4KC0wLjg3LCAtMC40OSwgMC40OSwgLTAuODcsIDE4NC44NywgMzY1Ljg3KSI+UjwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE3MC4zNSAzNTcuNjUpIHJvdGF0ZSgtMTQzLjM3KSI+RzwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0ibWF0cml4KC0wLjczLCAtMC42OCwgMC42OCwgLTAuNzMsIDE1Ni45OSwgMzQ3LjYzKSI+YTwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0Ny4wOCAzMzguNTcpIHJvdGF0ZSgtMTMwLjcyKSI+aDwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEzNi4yNyAzMjUuNjYpIHJvdGF0ZSgtMTI2LjA3KSI+STwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEzMi45OCAzMjEuNTgpIHJvdGF0ZSgtMTIxLjQxKSI+YjwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEyNC4yNyAzMDcuMzYpIHJvdGF0ZSgtMTE0LjM0KSI+NDwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0ibWF0cml4KC0wLjMsIC0wLjk2LCAwLjk2LCAtMC4zLCAxMTcuMzcsIDI5Mi4xOCkiPi48L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMTIuNCAyNzYuMjcpIHJvdGF0ZSgtMTAwLjE5KSI+UjwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwOS42NCAyNTkuNjgpIHJvdGF0ZSgtOTUuNTYpIj5JPC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTA4Ljg5IDI1NC40OCkgcm90YXRlKC05MC45OCkiPjA8L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDguNTggMjM3LjgxKSByb3RhdGUoLTgzLjk3KSI+djwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDExMC41NyAyMjEuMTEpIHJvdGF0ZSgtNzkuMykiPk88L3RleHQ+PHRleHQgY2xhc3M9ImNscy0yIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMTAuOTYgMjE1Ljk1KSByb3RhdGUoLTcyLjg5KSI+JDwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0ibWF0cml4KDAuNDQsIC0wLjksIDAuOSwgMC40NCwgMTE4LjU0LCAxOTIuMjcpIj52PC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJtYXRyaXgoMC41NCwgLTAuODQsIDAuODQsIDAuNTQsIDEyNS43OSwgMTc3LjI2KSI+NDwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEzNC44NCAxNjMuMjQpIHJvdGF0ZSgtNTAuMDYpIj52PC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJtYXRyaXgoMC43MywgLTAuNjgsIDAuNjgsIDAuNzMsIDE0NS41NCwgMTUwLjQzKSI+ZzwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE1Ny43MSAxMzkuMDIpIHJvdGF0ZSgtMzYuMDQpIj50PC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTcxLjE2IDEyOS4xOSkgcm90YXRlKC0yOSkiPlI8L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09Im1hdHJpeCgwLjkzLCAtMC4zNywgMC4zNywgMC45MywgMTg1Ljc2LCAxMjEuMDcpIj4uPC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJtYXRyaXgoMC45NywgLTAuMjYsIDAuMjYsIDAuOTcsIDIwMS4yMSwgMTE0LjgzKSI+MTwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIxNy4zMiAxMTAuNTQpIHJvdGF0ZSgtNy43OCkiPjg8L3RleHQ+PHRleHQgY2xhc3M9ImNscy0yIiB0cmFuc2Zvcm09Im1hdHJpeCgxLCAtMC4wNywgMC4wNywgMSwgMjMzLjk3LCAxMDguNTIpIj59PC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjM5LjEzIDEwNy42Mikgcm90YXRlKDMuMTEpIj4lPC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJtYXRyaXgoMC45OCwgMC4yMSwgLTAuMjEsIDAuOTgsIDI2My45NSwgMTA5LjI1KSI+LjwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDI4MC4yNiAxMTIuNjUpIHJvdGF0ZSgxOC45NykiPkA8L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyOTYuMDkgMTE4LjMzKSByb3RhdGUoMjMuNjUpIj57PC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzAwLjk3IDEyMC4yKSByb3RhdGUoMjguMzIpIj5SPC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzE1LjY4IDEyOC4wOSkgcm90YXRlKDM1LjM0KSI+RzwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0ibWF0cml4KDAuNzUsIDAuNjYsIC0wLjY2LCAwLjc1LCAzMjkuMjcsIDEzNy44MSkiPmE8L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09Im1hdHJpeCgwLjY3LCAwLjc0LCAtMC43NCwgMC42NywgMzM5LjM5LCAxNDYuNjcpIj5oPC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJtYXRyaXgoMC42MSwgMC43OSwgLTAuNzksIDAuNjEsIDM1MC40OCwgMTU5LjMyKSI+STwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0ibWF0cml4KDAuNTQsIDAuODQsIC0wLjg0LCAwLjU0LCAzNTMuODUsIDE2My4zMykiPmI8L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzNjIuODggMTc3LjM0KSByb3RhdGUoNjQuMzYpIj40PC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzcwLjEyIDE5Mi4zNikgcm90YXRlKDcxLjQ1KSI+LjwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDM3NS40NiAyMDguMTcpIHJvdGF0ZSg3OC41MykiPlI8L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzNzguNTggMjI0LjcpIHJvdGF0ZSg4My4xNykiPkk8L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzNzkuNDYgMjI5Ljg1KSByb3RhdGUoODcuODcpIj4wPC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJtYXRyaXgoLTAuMDgsIDEsIC0xLCAtMC4wOCwgMzgwLjEzLCAyNDYuNTQpIj52PC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJtYXRyaXgoLTAuMTYsIDAuOTksIC0wLjk5LCAtMC4xNiwgMzc4LjUyLCAyNjMuMjYpIj5PPC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzc4LjI1IDI2OC40NSkgcm90YXRlKDEwNS44MikiPiQ8L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzNzEuMjEgMjkyLjI4KSByb3RhdGUoMTE0LjYxKSI+djwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0ibWF0cml4KC0wLjUyLCAwLjg1LCAtMC44NSwgLTAuNTIsIDM2NC4yOCwgMzA3LjQ2KSI+NDwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDM1NS41NiAzMjEuNjYpIHJvdGF0ZSgxMjguNjYpIj52PC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzQ1LjE1IDMzNC43MSkgcm90YXRlKDEzNS42NikiPmc8L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMzMuMjUgMzQ2LjM5KSByb3RhdGUoMTQyLjY3KSI+dDwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMxOS45OSAzNTYuNTMpIHJvdGF0ZSgxNDkuNzIpIj5SPC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtMyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzA1LjYxIDM2NC45Nikgcm90YXRlKDE1Ni43OSkiPi48L3RleHQ+PHRleHQgY2xhc3M9ImNscy0zIiB0cmFuc2Zvcm09Im1hdHJpeCgtMC45NiwgMC4yOCwgLTAuMjgsIC0wLjk2LCAyOTAuMywgMzcxLjU2KSI+MTwvdGV4dD48dGV4dCBjbGFzcz0iY2xzLTMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDI3NC4yNyAzNzYuMjIpIHJvdGF0ZSgxNzAuOTQpIj44PC90ZXh0Pjx0ZXh0IGNsYXNzPSJjbHMtNCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjA0Ljg2IDI5OC4xMykiPlM8L3RleHQ+PC9zdmc+">
+	
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.lumen.css">
+	<link type="text/css" rel="stylesheet" href="styles/supplemental.css">
+	
+		<link type="text/css" rel="stylesheet" href="styles/font-awesome.min.css">				
+	
+		<link type="text/css" rel="stylesheet" href="styles/shinmark.css">				
+	
+		<link type="text/css" rel="stylesheet" href="styles/local.css">				
+	
+</head>
+
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand navbar-brand-min" href="index.html"><img class="branding-logo" src="img/ShinworksBW.png"
+		alt="logo"/><span>jsdoc-view</span></a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-jsdoc-view.html">jsdoc-view</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			<section class="tutorial-section">
+
+<header>
+    
+
+    <h2>DESIGN</h2>
+</header>
+
+<article>
+    <p>#{ ToDo</p>
+<ul>
+<li><p><code>getShimmedContent</code> and <code>loadJSDoc</code> are almost the exact same thing.  Should probably remove one and clean up the code.</p>
+<ul>
+<li>even <code>getJSDocContent</code> is only slightly different from the other two.</li>
+</ul>
+</li>
+<li><p>Double check into <code>retainContextWhenHidden</code> and verify that this isn't something I need to worry about.  (I recall looking at this before, but I'm less confident of my memory that it wasn't apropos)  <a href="https://code.visualstudio.com/docs/extensions/webview">Webview API example</a></p>
+</li>
+</ul>
+<p>}</p>
+<h1>Design Debates</h1><p>!{ Total aside
+Now that I've been using this pattern more, this isn't exactly a DESIGN document as much as it is a dev journal.  Perhaps I should rename it.
+-- Actually what I've done elsewhere is split them into two separate documents
+}</p>
+<p><code>CHANGELOG.md</code> is nice and all for consumers of the extension, but really I want a similar document with notes for <em>me</em> about changes to the internal structure of this extension, its algorithms and the like.  I already have some facilities to accomplish this in place via <code>shinstrap</code> and <code>shin-jsdoc-tags</code>.  Actually I like this thought, but I need to extend those tags to include commit refs and use <code>shinzen</code> to produce reports thereof.  Then I could refrain from maintaining a <code>DEV-CHANGELOG.md</code>, per se, but rather generate one from doc comments made as the changes were put into place, which feels more intelligent, although susceptible, perhaps, to laziness.</p>
+<h2>The Service model</h2><p>The question is wether to create a separate detached process to handle processing (similar to how language services are handled) and send messages back and forth to it to handle html preprocessing and to do keyword look ups.</p>
+<p>Without reading more about Langauge services, the idea here would be to spawn a detached process that would shut itself down after a certain period of inactivity, and would take requests over a named pipe, possibly keyed to either its or its launcher's pid, and would basically do the preprocessing/shimming of pages, and calculations like, which set of docs to view and what to display, anchors, etc. on behalf of the extension and just route the results back to here.</p>
+<p>[extension]:</p>
+<ul>
+<li>Open webview with params (e.g. <code>localResourceRoots:</code>), basically specifying which jsdoc cluster to display</li>
+<li>Take and pass to webview messages (e.g. <code>search</code> or <code>scrollTo</code>)</li>
+</ul>
+<p>[provider]:</p>
+<ul>
+<li>Take an open request in a file on a word and figure out which jsdoc cluster to work with, and what lookup to call (this is potentially the wrong way to do this).<br>This is the basis of advanced contextual binding/intellisense</li>
+</ul>
+<h1>Notes</h1><h2>Another webviewPanel bug</h2><p>So, when a webviewPanel is no longer visible, it gets destroyed.  It does not, however, call dispose.  It then is silently recreated when it comes into focus again.  This means that the panel's contents are reloaded and are temporarily unavailable (vis a vis messages).  This is an additional issue to <code>message ready</code> below, because this recurs every time the webview panel is hidden.  There is an event, however, that appears to work--<code>onDidChangeViewState</code>.</p>
+<h2>The shim alternative</h2><p>Rather than shim all the links, I've put in an event intercept on the document to look for clicks on links and override them as appropriate.  Thus far, this has worked fine.  I'm catching, iir, <code>document.onclick</code> to intercept such events.  This may have issues I haven't thought of.  I annotate here <a href="https://www.sitepoint.com/javascript-event-delegation-is-easier-than-you-think/">this article</a> I didn't read on event bubbling, in case this turns out to require investigation.</p>
+<h2><code>message ready</code></h2><p>I have uncovered an architectural flaw in the webview system where, basically, there is no mechanism that allows an extension to know when a webview is ready.  Instead, I will need to roll my own.  This is basically going to be a two part problem.  First, I need to have the webview notify the extension when it is ready (in document.ready).  Second, I need to wrapper <code>_panel.webview.postMessage</code> such that any messages sent to the webview before its ready are instead put onto a queue and get sent, instead, when it receives the webviewReady message.</p>
+<h2>The <code>docstrap search</code></h2><p>Docstrap conducts its search in a frame.  Why?  I have no idea.  This frame loads up some sources of the file, does a search in a dataUrl which has the full text in it (ok, so that's why, but...).  When it retrieves an answer it posts it back to root frame, despite cross-domain issues (at least <em>I</em> have cross-domain issues trying to talk between these frames, I don't know the rules by which some operations/fields are accessible but others are not in chrome).</p>
+<p>Less importantly, docstrap creates the iframe in client on document ready.  It attaches a listener to the faux-submit button and sends messages (e.g. <code>postMessage</code>) between the button, the iframe and back.  The actual results are displayed in a results <code>div</code> on the main page which is populated dynamically.  The iframe is never dispayed or interacted with, afaik, it is just a mechanism for deferred loading.</p>
+<h2>Anchors &amp; Gotos</h2><p>We can within an iframe grab an element and <code>scrollIntoView()</code> it.</p>
+<pre class="prettyprint source"><code>    $(&quot;a[name=&quot; + _anchor + &quot;]&quot;)[0].scrollIntoView();</code></pre><p>I also know, at least for docstrap, that it has a lib which on opening a source file sets a specific anchor pattern for each source line therein.  This is <em>probably</em> a jsdoc convention, and not specific to docstrap.  This is accomplished by a <code>document.ready</code> based decorator than sweeps the file adding anchors to every source line (as I recall).</p>
+<p>  $('#active-frame').contentWindow.scrollTo(0,300)
+  $('#active-frame').contentWindow.scrollY</p>
+<p>Works, but only from the context of the debugger, which is working from a global context.  In <code>shim-helpers.js</code>, we have a different scope of access.  There we need to use <code>window.self</code>.  If defined, this is the <code>contentWindow</code> for the current document.  <code>window.top</code> is the root <code>window</code>.  If undefined there is only one <code>window</code>.  I'm not sure if all the browsers use this pattern, but it holds for the webkit used by atom/electron/vscode.  Thus...</p>
+<p>  window.self.scrollY
+  window.self.scrollTo(0, 300)</p>
+<h1>Gotchas</h1><p>#{ Release Notes (Log) </p>
+<ul>
+<li>I have removed shims from preprocessing.  All links go through an event capture mechanism now, which intercepts and reroutes anchor links to local path relative urls.  This is in alpha and may have bugs.
+}</li>
+</ul>
+<h2>Paths in createWebView</h2><p>Normal paths did not work.  You have to run them through <code>vscode.Uri.file</code>.</p>
+<pre class="prettyprint source"><code>let workspacePath = vscode.Uri.file(vscode.workspace.rootPath);
+let extentionPath = vscode.Uri.file(context.extensionPath);
+
+if(jsdocViewState.panel === undefined) {
+    jsdocViewState.panel = vscode.window.createWebviewPanel(
+        'jsdocView',
+        &quot;JSDoc View&quot;,
+        columnToShowIn,
+        { enableScripts: true, localResourceRoots: [
+            workspacePath,
+            extentionPath
+            // vscode.workspace.rootPath
+            // path.join(vscode.workspace.rootPath, &quot;docs&quot;),
+            // path.join(vscode.workspace.rootPath, &quot;node_modules/ink-docstrap/template/static/styles&quot;)
+        ] }
+    );</code></pre><h2>Serializer didn't work...</h2><pre class="prettyprint source"><code>// Neither of these work.
+context.subscriptions.push(vscode.window.registerWebviewPanelSerializer('jsdocView', (_panel, _state) => {
+    jsdocViewState.panelReady = false;
+}));
+vscode.window.registerWebviewPanelSerializer('jsdocView', (_panel, _state) => {
+    jsdocViewState.panelReady = false;
+});
+
+// with the following as activationEvents in `package.json`
+&quot;onWebviewPanel:jsdocView&quot;</code></pre><h2>Old Experiments</h2><pre class="prettyprint source"><code>function shinTest(_panel) {
+    let t = path.join(vscode.workspace.rootPath, &quot;test.html&quot;);
+    fs.readFile(t, (err, data) => {
+        if(err) {            
+            vscode.window.showErrorMessage(util.format(&quot;jsdocView encountered an error: %s&quot;, err.message));
+        }
+        _panel.webview.html = data.toString();
+    });
+}
+
+function loadTest(_panel, _fileName) {
+    let t = path.join(vscode.workspace.rootPath, _fileName);
+    fs.readFile(t, (err, data) => {
+        if(err) {            
+            vscode.window.showErrorMessage(util.format(&quot;jsdocView encountered an error: %s&quot;, err.message));
+        }
+        _panel.webview.html = data.toString();
+    });
+}</code></pre><h2>original &quot;shimHtml()&quot; code</h2><p>Along with the code below, the following settings were removed from this extension's package.json...</p>
+<p>  ,
+  &quot;jsdocView.preprocessOptions.fixAttributePaths&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;default&quot;: true,
+      &quot;description&quot;: &quot;[deprecated]: Set to true if you want the jsdocView preprocessor to change all attribute paths in script, link &amp; anchor tags without a protocol to use <code>vscode-resource:</code>&quot;
+  },
+  &quot;jsdocView.preprocessOptions.shimLinks&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;default&quot;: true,
+      &quot;description&quot;: &quot;[deprecated]: Instructs the preprocessor to shin anchor link tags with a function which will allow them to work in Visual Code.&quot;
+  },
+  &quot;jsdocView.preprocessOptions.shimLinkExcludeClasses&quot;: {
+      &quot;type&quot;: &quot;array&quot;,
+      &quot;default&quot;: [
+          &quot;dropdown-toggle&quot;
+      ],
+      &quot;description&quot;: &quot;[deprecated]: A list of anchor classes for which no shims should be inserted.&quot;
+  }</p>
+<p>The deprecated notes ;)</p>
+<p><code>preprocessOptions.shimLinks</code>
+:   If true, the preprocessor will replace the <code>href</code> values on <code>&lt;a&gt;</code> tags with relative paths with an <code>onclick</code> shimmed function which will message vscode itself to update the webview's location.</p>
+<p><code>preprocessOptions.shimLinkExcludeClasses</code>
+:   An array of class names any of which if present on a given tag indicate that the tag <em>should not be shimmed</em>, even if it would otherwise qualify.  This allows one to specify overrides for tags which may be shimmed by other functions (like the navbar in docstrap).</p>
+<p><code>preprocessOptions.fixAttributePaths</code>
+:   Will cause the jsdocView preprocessor to replace the <code>href</code> and <code>src</code> attribute values of <code>&lt;script&gt;</code>, <code>&lt;link&gt;</code> and <code>&lt;a&gt;</code> tags which do not specify a protocol with an absolute pathed value with the <code>vscode-resource:</code> protocol.  Relative paths are assumed to be in the <code>docsDir</code>.</p>
+<p><code>shimHtml()</code> :</p>
+<p>  /**</p>
+<ul>
+<li>@desc</li>
+<li>Process the html provided to make it functional within the gimped environment of a vscode webview.</li>
+<li>@algorithm</li>
+<li>This function takes its direction from the configuration settings in <code>jsdocView.preprocessOptions.*</code>.</li>
+<li><ul>
+<li>Replace CSP</li>
+</ul>
+</li>
+<li><ul>
+<li>Replace src attributes on <code>&lt;script&gt;</code> and <code>&lt;a&gt;</code> tags</li>
+</ul>
+</li>
+<li><ul>
+<li>shim <code>&lt;a&gt;</code> tags</li>
+</ul>
+</li>
+<li>@remarks</li>
+<li>Passing <code>_sHtml</code> on the stack is probably unwise for large files.  I deliberate how else I might want to deal.</li>
+<li>I could use a global, with the potentialy messes that introduces to avoid copying on the stack.  I could roll </li>
+<li>reading of the file into this function.  I could box the string buffer and pass it that way, which is probably</li>
+<li>what I should do.</li>
+<li>@param {string} _sHtml The string &quot;buffer&quot; containing the html to process.  See remarks.</li>
+<li><p>@param {<em>} _extPath 
+</em>/
+function shimHtml(_sHtml, _extPath) {
+  const $ = cheerio.load(_sHtml);
+  const { URL } = require('url');</p>
+<p>  // Now doing this twice...
+  const config = vscode.workspace.getConfiguration('jsdocView');
+  let docDir = config.get(&quot;docDir&quot;);
+  let projectRootPath = vscode.workspace.rootPath.replace(/\/g, &quot;/&quot;);  //! _path = path.normalize(_path); &lt;-- Why didn't this work
+  // win32 patch<br>  let drive = projectRootPath.substring(0, projectRootPath.lastIndexOf(&quot;:&quot;)+1);
+  projectRootPath = projectRootPath.substring(projectRootPath.lastIndexOf(&quot;:&quot;)+1);
+  let docPath = path.posix.join(projectRootPath, docDir);</p>
+<p>  //#region Helper functions
+  function hasNoProtocol(_url) {</p>
+<pre class="prettyprint source"><code>  // So I knew it would be wasteful, but it turns out its requirements cause it to be fail prima facia.
+  // let url = new URL(_url, docDir);
+
+  // So I should look up the RFC for protocol specification.  This seems fragile.
+  if(/^[\w-_]+:/.test(_url)) {
+      return false;
+  }
+  return true;</code></pre><p>  }</p>
+<p>  function normalizePath(_el, _sAttr) {</p>
+<pre class="prettyprint source"><code>  let el = $(_el);
+  let url = el.attr(_sAttr);
+
+  // The trouble here is, relative to what, potentially.
+  let p = path.posix.join(docPath, url);
+  p = util.format(&quot;vscode-resource:/%s%s&quot;, drive, p);
+  el.attr(_sAttr, p);</code></pre><p>  }</p>
+<p>  /**</p>
+<ul>
+<li>@remarks</li>
+<li>At the moment, all shims are doc dir relative (and treated that way by the shim as well).</li>
+<li><p>@param {object} _el 
+*/
+function insertShim(_el) {
+  let el = $(_el);
+  // super fragile
+  let ap = el.attr('href');
+  // ap = path.posix.join(docDir, ap);
+  // ap = ap.replace(/\/g, &quot;/&quot;);
+  // let p = path.posix.relative(projectRootPath, ap);
+  el.attr('href', null);
+  el.attr(&quot;onclick&quot;, util.format(&quot;ss_shim_nav('%s')&quot;, ap));
+}</p>
+<p>//#endregion</p>
+<p>try {
+  // add/replace content-src policy
+  if(config.get(&quot;preprocessOptions.replaceCSP&quot;)) {</p>
+<pre class="prettyprint source"><code>  //&lt;meta http-equiv=&quot;Content-Security-Policy&quot;
+  let csp = $('meta[http-equiv=Content-Security-Policy]');
+  if(csp.length >0) {
+      csp.attr('content', &quot;default-src vscode-resource: https: http: data:; img-src vscode-resource: https: data: http:; script-src 'unsafe-inline' 'unsafe-eval' vscode-resource: http:; style-src 'unsafe-inline' vscode-resource: https: http:;&quot;);
+  } else {
+      $('head').prepend('&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src vscode-resource: https: http: data:; img-src vscode-resource: https: http: data:; script-src \'unsafe-inline\' \'unsafe-eval\' vscode-resource: http:; style-src \'unsafe-inline\' vscode-resource: https: http:;&quot;>');
+  }</code></pre><p>  }</p>
+<p>  // $('body').append('<script>$(document).ready(function() { console.log(&quot;<code>window</code> === <code>window.top</code>&quot;, window === window.top); \
+  //  console.log(&quot;<code>window.parent</code> === <code>window.top</code>&quot;, window.parent === window.top); \
+  //     if(window.parent.postMessage) {  \
+  //         console.log(&quot;I have a parent&quot;);  \
+  //     } \
+  //     window.weakid = Math.random() * 20000; \
+  //     console.log(window.weakid); \
+  //     console.log(window); });</script>');</p>
+<p>  // fix link and script tags
+  if(config.get(&quot;preprocessOptions.fixAttributePaths&quot;)) {</p>
+<pre class="prettyprint source"><code>  $('[href]').each((idx, el) => {
+      let e = $(el);
+  });
+  $('script').filter(function() {
+      return this.attribs.src !== undefined;
+  }).each((idx, el) => {
+      if(hasNoProtocol(el.attribs.src)) {
+          normalizePath(el, &quot;src&quot;);
+      }
+  });
+  $('link[rel=stylesheet]').filter(function() {
+      return this.attribs.href !== undefined;
+  }).each((idx, el) => {
+      if(hasNoProtocol(el.attribs.href)) {
+          normalizePath(el, &quot;href&quot;);
+      }
+  });</code></pre><p>  }</p>
+<p>  let exclusion = config.get(&quot;preprocessOptions.shimLinkExcludeClasses&quot;);
+  if(config.get(&quot;preprocessOptions.shimLinks&quot;)) {</p>
+<pre class="prettyprint source"><code>  // insert shim helpers
+  $('head').append(util.format('&lt;script src=&quot;vscode-resource:/%s&quot;>&lt;/script>', path.join(_extPath, '/lib/jsdocViewIntegration.js').replace(/\\/g, &quot;/&quot;)));
+
+  // and a link style
+  //! should I retrieve the cursor style for a default anchor?
+  $('head').append(`&lt;style>a[onclick] { cursor: pointer }&lt;/style>`);</code></pre><p>  } else {</p>
+<pre class="prettyprint source"><code>  // I should split them up, but I use shim helpers for more than just shims now
+  $('head').append(util.format('&lt;script src=&quot;vscode-resource:/%s&quot;>&lt;/script>', path.join(_extPath, '/lib/jsdocViewIntegration.js').replace(/\\/g, &quot;/&quot;)));</code></pre><p>  }</p>
+<p>  $('a').filter(function() { </p>
+<pre class="prettyprint source"><code>  return this.attribs.href !== undefined;</code></pre><p>  }).each((idx, el) =&gt; {</p>
+<pre class="prettyprint source"><code>  let shimmed = false;
+  if(config.get(&quot;preprocessOptions.shimLinks&quot;)) {
+      // if this anchor isn't excluded
+      if(!exclusion.reduce(function(acc, excl) {
+          if($(el).hasClass(excl)) {
+              return true;
+          } else {
+              return acc;
+          }
+      }, false)) {
+          // replace all normal links with onclick references
+          if(hasNoProtocol(el.attribs.href)) {
+              insertShim(el);
+              shimmed = true;
+          }
+      }
+  }
+
+  // temp testing
+  if(exclusion.reduce(function(acc, excl) {
+      if($(el).hasClass(excl)) {
+          return true;
+      } else {
+          return acc;
+      }
+  }, false)) {
+      if(!shimmed && config.get(&quot;preprocessOptions.fixAttributePaths&quot;)) {
+          if(hasNoProtocol(el.attribs.href)) {
+              normalizePath(el, &quot;href&quot;);
+          }
+      }
+  }</code></pre><p>  });</p>
+<p>} catch(e) {
+  console.log(&quot;Something happened %s&quot;, e);
+}</p>
+</li>
+</ul>
+</li>
+</ul>
+<pre class="prettyprint source"><code>  // $('a').filter(function() { 
+  //     // This is specifically filtering to avoid navbar expansions/replacements in the menu of docstrap jsdoc.
+  //     return this.attribs.href !== undefined && this.attribs.class.indexOf(&quot;navbar-brand&quot;) === -1;
+  // }).each((idx, el) => {
+  //     let e = $(el);
+  //     let ap = e.attr('href');
+  //     ap = ap.substring(ap.lastIndexOf(&quot;:&quot;)+1);
+  //     let p = path.posix.relative(rp, ap);
+  //     e.attr('href', null);
+  //     e.attr(&quot;onclick&quot;, util.format(&quot;ss_shim_nav('%s')&quot;, p));
+  // });
+
+  // Scroll
+  //$(document).ready(function() { 
+  //document.getElementById(&quot;anchorTest&quot;).scrollIntoView(); });
+
+  return $.html();</code></pre><p>  }</p>
+</article>
+
+</section>
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	`JSDoc Viewer` Copyright © 2018 Shin
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Wed Oct 31st 2018
+	
+	using the <a href="https://github.com/Shizen/shinstrap">shinstrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/shinstrap.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+
+
+</body>
+</html>

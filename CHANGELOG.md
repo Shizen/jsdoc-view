@@ -1,7 +1,8 @@
 # Change Log
-All notable changes to the "jsdoc-view" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+Changes to the `jsdoc-view` extension will be documented in this file.
 
-## [Unreleased]
+
+## [0.0.3] - 10/31/2018
+
 - Initial release

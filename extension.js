@@ -1,10 +1,25 @@
-// jshint esversion: 6
-
 /**
- * @remarks
- * 
+ * @file The `extension.js` file is the standard hook-in file for a vscode extension.
+ * @author Shin <shin@shinworks.co>
+ * @todo document the various typedefs in this project, particularly `_jsdocViewState`
  */
 
+/**
+ * @module jsdoc-view
+ * @public
+ * @desc
+ * The jsdoc-view is a vscode extension which adds support for viewing jsdoc generated documentation
+ * within vscode.  
+ * @algorithm
+ * Currently, this extension works by preprocessing and sanitizing each jsdoc generated page live, in
+ * memory to allow it to work within the context of a vscode webview panel.  Communication between 
+ * vscode and the jsdoc page is maintained via posted `message` events (this is standard practice).
+ * 
+ * This extension currently has special handling on both sides for performing a full text search and
+ * for openning a file to a particular element.  
+ */
+
+// jshint esversion: 6
 const vscode = require('vscode');
 const path = require('path');
 const util = require('util');
@@ -12,6 +27,12 @@ const cp = require("child_process");
 const fs = require('fs');
 const cheerio = require('cheerio');
 
+/**
+ * This function is the "root" hook for this extension within vscode.  This function registers its handlers for the 
+ * commands declared in this extension's `package.json`.
+ * @protected
+ * @param {object} context The vscode provided context object.
+ */
 function activate(context) {
     let jsdocViewState = {};
     jsdocViewState.extensionPath = context.extensionPath;
@@ -54,10 +75,23 @@ function activate(context) {
 }
 exports.activate = activate;
 
+/**
+ * Standard deactivate hook.
+ * @protected
+ */
 function deactivate() {
 }
 exports.deactivate = deactivate;
 
+/**
+ * This function creates the jsdoc-view webview panel for the current project.  Currently, the project is defined as the
+ * the root project for the open workspace--this is very bad :).  I need to update the algorithm by which this is 
+ * determined.
+ * @protected
+ * @param {object} _jsdocViewState The jsdocView State object
+ * @param {object} _context The retained context object with which this extension was originally activated.
+ * @param {object} _editor If defined, the active editor for which this view is being created.
+ */
 function createJsDocView(_jsdocViewState, _context, _editor) {
     const columnToShowIn = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
     let workspacePath = vscode.Uri.file(vscode.workspace.rootPath);
@@ -127,6 +161,14 @@ function createJsDocView(_jsdocViewState, _context, _editor) {
     //-------------------------------------------------------------------------------------
 }
 
+/**
+ * This is the message routing function which handles sending messages from the extension to the client
+ * webview.  Besides acting as an encapsulating chokepoint, this function also ensures that any messages
+ * sent before the view is ready are instead queued to be sent "later".  See also 
+ * {@link module:jsdoc-view.createJsDocView} for details (`onDidReceiveMessage`).
+ * @param {object} _message The message being sent to the webview panel.
+ * @param {object} _jsdocViewState The state object for this extension.
+ */
 function postMessage(_message, _jsdocViewState) {
     // So it doesn't dispose of the panel when it goes out of view.
     if(_jsdocViewState.panelReady) {
@@ -136,6 +178,14 @@ function postMessage(_message, _jsdocViewState) {
     }
 }
 
+/**
+ * This function handles executing jsdoc generation.  This function includes basic debouncing and
+ * will fail ("silently") if the command is already in process.  
+ * @protected
+ * @param {object} _state The jsdocViewState object.
+ * @todo Add a return value indicating success or failure.
+ * @todo Where is the error handling?!?
+ */
 function generateJSDocs(_state) {
     // basic debounce
     if(_state.childProcess === undefined) {
@@ -163,6 +213,14 @@ function generateJSDocs(_state) {
     }
 }
 
+/**
+ * This is the function called to generate the initial page when jsdoc-view "launches" its viewer.
+ * See {@link module:jsdoc-view.loadJSDoc} for details on the function which generates 
+ * pages navigated to by links.
+ * @protected
+ * @param {object} _panel The webview panel
+ * @param {string} _extPath The path to this extension
+ */
 function getJSDocContent(_panel, _extPath) {
     const vscode = require('vscode');
 
@@ -209,6 +267,14 @@ function getJSDocContent(_panel, _extPath) {
     }
 }
 
+/**
+ * This is the function which is called to shim content which is loaded in the background. See 
+ * {@link module:jsdoc-view.getJSDocContent} for details on the generator function for the initial content,
+ * and {@link module:jsdoc-view.loadJSDoc} for navigation triggered load/shimming.
+ * @param {string} _urlRelPath url base
+ * @param {function} _cbFn Callback function
+ * @param {string} _extPath Path to this extension
+ */
 function getShimmedContent(_urlRelPath, _cbFn, _extPath) {
     const vscode = require('vscode');
     try {
@@ -228,6 +294,14 @@ function getShimmedContent(_urlRelPath, _cbFn, _extPath) {
     }
 }
 
+/**
+ * This function is the handler for load requests for local html files generated by the webview panel.  See
+ * See {@link module:jsdoc-view.getJSDocContent} for details on initial content generation.
+ * @param {object} _panel The webview panel object
+ * @param {string} _fileName The rel-path filename being requested
+ * @param {string} _extPath The path to this extension
+ * @param {string} _scrollToPoint The name of the anchor to which the view should be scrolled upon display.
+ */
 function loadJSDoc(_panel, _fileName, _extPath, _scrollToPoint) {
     const config = vscode.workspace.getConfiguration('jsdocView');
     const docDir = config.get("docDir");

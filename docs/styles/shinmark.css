@@ -1,0 +1,236 @@
+
+/* @import url("font-awesome.min.css"); */
+
+/*--------------------------------------------*/
+/* Start with css variables for color         */
+
+* {
+  --primaryColor: #dbe9c8;
+  --primaryAccentColor: white;
+  --primaryDisabledColor: #aaa;
+  
+  --colorSpecial: purple;
+  --colorWarning: red;
+  
+  --hiliteColor: yellow;
+  --hiliteAccentColor: beige;
+  
+  --hoverHiliteColor: GreenYellow; 
+  
+  --backgroundColor: #f6fff0;
+  --backgroundOffsetColor: #f3f38d;
+  
+  --titleColor: #214309;
+  --navColor: #516e2b;
+  --navOffsetColor: #617e3b;
+  
+  --constructionBorderColor: black;
+  --constructionBackgroundColor: #ccc;
+  --constructionColor: #333;
+}
+
+/*--------------------------------------------*/
+/* Setup Resources                            */
+
+* {
+  --styleFont: "Times New Roman", Times, serif;
+  --bodyFont: "Times New Roman", Times, serif;
+}
+
+/*--------------------------------------------*/
+/* Support for standard marks                 */
+.md mark {
+  color: inherit;
+  background-color: inherit;
+}
+
+.md ul, .md ol {
+  padding-top: 0.1em;
+  margin-left: 40px;
+  margin-bottom: 1.1em;
+}
+
+.md ul ul, .md ol ol {
+  padding-top: 0.1em;
+}
+
+.md p {
+  padding-bottom: 0.5em;
+}
+
+.md li p {
+  padding-bottom: 0em;
+}
+
+.md li p + p {
+  padding-top: 0.25em;
+}
+
+.md li p + p + p {
+  padding-top: 0.35em;
+}
+
+.md hr {
+  margin-top: 0.25em;
+  margin-bottom: 0.75em;
+}
+
+.md h1 {
+  padding-top: 0.2em;
+  padding-bottom: 0.25em;
+}
+
+.md h2 {
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+
+.md h3 {
+  padding-top: 0.1em;
+  padding-bottom: 0.2em;
+}
+
+.md h4 {
+  padding-top: 0.1em;
+  padding-bottom: 0.2em;
+}
+
+.md h5 {
+  padding-top: 0.1em;
+  padding-bottom: 0.2em;
+}
+
+.md pre {
+  padding: 0.25em;
+  margin: 0.5em;
+  background-color: var(--backgroundOffsetColor);
+}
+
+.md code {
+  background-color: var(--backgroundOffsetColor);
+}
+
+.md table {
+  border: 1px solid var(--backgroundOffsetColor);  
+}
+
+.md td {
+  border: 1px dashed var(--backgroundOffsetColor);
+}
+
+.md dd {
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+.md dt {
+  font-weight: 600;
+}
+
+
+/*--------------------------------------------*/
+/* Support for Shinmark specific marks        */
+
+.md mark {
+  color: inherit;
+  background-color: inherit;
+}
+
+.md details {
+  padding-bottom: 0.5em;
+  cursor: pointer;
+}
+
+
+.md .shinmark-callout-warning {
+  background-color: var(--hiliteColor);
+  padding-left: 0.4em;
+  border-radius: 0.25em;
+  margin: 0.25em;
+  margin-top: .75em;
+  margin-bottom: .75em;
+  padding-top: 0.25em;
+  padding-bottom: 0.1em;
+}
+.md .shinmark-callout-warning:before {
+  font-family: FontAwesome;
+  content: "\f06a";
+  padding-right: 0.2em;
+}
+.md .shinmark-callout-warning:after {
+  font-family: FontAwesome;
+  content: "\f06a";
+  padding-top: 1px;
+  padding-left: 0.2em;
+  padding-right: 0.4em;
+  float: right;
+}
+
+
+.md .callout-question {
+  background-color: var(--backgroundOffsetColor);
+  padding-left: 0.3em;
+  border: 1px dotted var(--constructionColor);
+  margin: 0.5em;
+  border-radius: 1em;
+  padding-top: 0.15em;
+  padding-bottom: 0.1em;
+}
+.md .callout-question:before {
+  font-family: FontAwesome;
+  content: "\f29c";
+}
+.md .callout-question:after {
+  font-family: FontAwesome;
+  content: "\f29c";
+  padding-top: 1px; 
+  padding-right: 0.3em;
+  float: right;
+}
+
+
+.md .shinmark-sidebar .title {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+.md .shinmark-sidebar {
+  position: relative;
+  left: 1.5em;
+  background-color: var(--backgroundOffsetColor);
+  border: 3px double var(--constructionBorderColor);
+  float: right;
+  padding: 1em;
+  border-radius: 0.25em;
+  width: 40%;
+  clear: both;
+  margin-bottom: 1em;
+}
+
+
+.md .framebox-example {
+  display: flow-root;
+  font-style: italic;
+  background-color: var(--backgroundOffsetColor);
+  border-width: 3px;
+  border-style: outset;
+  margin: 1em;
+  padding: 0.4em;
+  padding-bottom: 0.1em;
+}
+
+
+.md details.collapsible-note {
+  padding-left: 0.2em;
+  background-color: var(--backgroundOffsetColor);
+  color: var(--constructionColor);
+  border-radius: 3px;
+}
+.md details.collapsible-note summary {
+  font-style: italic;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+.md details.collapsible-note p {
+  text-indent: 0.25em;
+  font-size: 0.8em;
+}

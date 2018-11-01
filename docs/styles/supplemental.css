@@ -1,0 +1,81 @@
+
+/* Shin's additional css */
+
+.subsection-title {
+  text-transform: capitalize;
+}
+
+.capitalize-title {
+  text-transform: capitalize;
+}
+
+.list-group-item {
+  text-transform: capitalize;
+}
+
+.method-title-template {
+  text-transform: capitalize;
+}
+
+.jsdoc-badge {
+  vertical-align: text-bottom;
+  margin-right: 0.1em;
+  opacity: 0.6;
+}
+
+.jsdoc-attrib-button {
+  background-color: green;
+  border-radius: 50px;
+  width: 1.21em;
+  display: inline-block;
+  text-align: center;
+  height: 1.21em;
+  border: 1px black dotted;
+  margin-right: 0.1em;
+  color: white;
+  cursor: default;
+  user-select: none;
+}
+
+.jsdoc-attrib-private {
+  background-color: #cb563f;
+}
+.jsdoc-attrib-protected {
+  background-color: #cba317;
+}
+.jsdoc-attrib-public {
+  background-color: #4c1;
+}
+.jsdoc-attrib-global {
+  background-color: #cb3f95;
+}
+.jsdoc-attrib-static {
+  background-color: #0b7cbd;
+}
+.jsdoc-attrib-inner {
+  background-color: #4c1;
+}
+.jsdoc-attrib-instance {
+  background-color: #cba317;
+}
+.jsdoc-attrib-nullable {
+  background-color: #666;
+}
+.jsdoc-attrib-non-null {
+  background-color: #111;
+}
+.jsdoc-attrib-constant {
+  background-color: #0b7cbd;
+}
+.jsdoc-attrib-readonly {
+  background-color: #333;
+}
+.jsdoc-attrib-async {
+  background-color: #cba317;
+}
+.jsdoc-attrib-generator {
+  background-color: #4c1;
+}
+.jsdoc-attrib-abstract {
+  background-color: #666;
+}
