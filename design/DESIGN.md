@@ -9,6 +9,10 @@
 - This entire package feels like it needs to have be reviewed more seriously.
     - The documentation also needs to be updated, especially with regard to taking advantage of new `shinstrap`/`shin-jsdoc-tags` facilities.
 
+- I ran into this package while looking for something else.  Doesn't feel wildly amazing or anything, but it might make a useful polyfill for cross-platform.  [`normalize-url`](https://github.com/sindresorhus/normalize-url) (for where I normalize relative links to use `vscode-resource:`)
+
+- Add to the on click shim a detection for source code line references, and wire them up to message back to the client and open/nav the editor to that file & lineno.
+
 }
 
 # Issues

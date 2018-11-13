@@ -37,6 +37,8 @@ This extension assumes the presence of the `jsdoc` module, although it doesn't c
 
 ## Known Issues
 
+Listed below are my known issues for this project.  If you have a comment, suggestion, request or other input on this project, please ask a question or leave a comment on the [vscode marketplace page for this project](https://marketplace.visualstudio.com/items?itemName=Shinworks.jsdoc-view).  If you encounter an issue, even one listed here, and would like to see it fixed, please go to the [github issues](https://github.com/Shizen/jsdoc-view/issues) tracker and file an issue.  This project is very much in an "on demand" mode.  If there is no demand, only issues which bother me sufficiently in contrast to my available time will actually get addressed.
+
 - Better UI feedback.  This is stone age reporting :(
 - Command debouncing (a brief survey shows some debouncing is in place, but I'm 65% sure it's not complete ;)
 - `favicon` settings do not show up as the icon for the tab in `vscode`.  I have noticed this but not researched it.
@@ -64,7 +66,7 @@ See also [the extensions KB](P:/_KnowledgeBase/_Applications/Visual%20Code/Exten
 
 ## Futures
 
-- Backwards hook-in -- shim source code links to open the texteditor in the appropriate location.
+- Backwards hook-in -- shim source code links to open the texteditor in the appropriate location.  THis is a very poorly worded feature idea.  What I mean is to add to the current click handler in the webview some extra logic to see if the link follows jsdoc's generated source code anchor format, and if it does, direct vscode to open that source file scrollto'd to that location.
 - Service implementation -- Alter the structure of this extension to use a service which starts itself up on demand and serves the jsdoc information to the webview.  The service would shut itself down after timeout (because it can always be spun back up anyway).  This service would then be responsible for doing any preprocessing (probably much less necessary), search, etc. type patterns.
 - source code references "should" be patched to open up that source line in the editor
 - Look at building a `css` sheet for #2 & #3 which takes advantage of css vars and VSCode's use thereof.
